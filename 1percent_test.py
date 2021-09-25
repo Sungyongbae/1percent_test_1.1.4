@@ -34,11 +34,11 @@ def get_minute(ticker):
     return volatility
 
 def check_vol(ticker):
-    df_d = pyupbit.get_ohlcv(ticker, interval="day", count=1)
+    df_d = pyupbit.get_ohlcv(ticker, interval="day", count=2)
     df_m = pyupbit.get_ohlcv(ticker, interval="minute1", count=2)
-    pre=(df_m.iloc[0]['close']/df_d['open']-1)*100
-    post=(df_m.iloc[-1]['close']/df_d['open']-1)*100
-    result=[pre.values,post.values]
+    pre=(df_m.iloc[0]['close']/df_d['close'][0]-1)*100
+    post=(df_m.iloc[-1]['close']/df_d['close'][0]-1)*100
+    result=[pre,post]
     return result
 
 def check_profit(ticker,price,total):
@@ -179,8 +179,10 @@ while True:
                 #매수/매도 못함, 전량매도
                 elif check_trade == False and check_buy == True :
                     fail_price = get_current_price(buy_ticker)
+                    fail_profit = check_profit(buy_ticker,buy_price,buy_total)
                     my_money = fail_price*(buy_total*0.9995*0.996)
                     bot.sendMessage(ID2, 'lose..rest...' + '\n'
+                                        + 'profit:' + str(fail_profit) + '\n'
                                         + 'my_money: ' + str(my_money))
                 #매수 못함/매도 몸함,
                 elif check_trade == False and check_buy == False:
